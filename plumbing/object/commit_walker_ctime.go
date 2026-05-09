@@ -69,6 +69,12 @@ func (w *commitIteratorByCTime) Next() (*Commit, error) {
 			}
 			pc, err := GetCommit(c.s, h)
 			if err != nil {
+				// In shallow clones, parent commits beyond the depth
+				// boundary don't exist in the local store. Skip them
+				// instead of aborting the entire walk.
+				if err == plumbing.ErrObjectNotFound {
+					continue
+				}
 				return nil, err
 			}
 			w.heap.Push(pc)

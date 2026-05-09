@@ -43,6 +43,11 @@ func (w *bfsCommitIterator) appendHash(store storer.EncodedObjectStorer, h plumb
 	}
 	c, err := GetCommit(store, h)
 	if err != nil {
+		// In shallow clones, parent commits beyond the depth boundary
+		// don't exist in the local store. Skip instead of aborting.
+		if err == plumbing.ErrObjectNotFound {
+			return nil
+		}
 		return err
 	}
 	w.queue = append(w.queue, c)

@@ -165,6 +165,9 @@ func (w *filterCommitIter) addToQueue(
 
 		commit, err := GetCommit(store, hash)
 		if err != nil {
+			if err == plumbing.ErrObjectNotFound {
+				continue
+			}
 			return err
 		}
 
